@@ -1,26 +1,20 @@
-package utils
+package elasticsearch
 
-type ESQuery struct {
-	Size  int         			`json:"size"`
-	Query map[string]any  		`json:"query"`
-	Aggs  map[string]any        `json:"aggs"`
+type Query struct {
+	Size  int            `json:"size"`
+	Query map[string]any `json:"query"`
+	Aggs  map[string]any `json:"aggs"`
 }
 
-func NewES(url string) *ESCmd {
-	return &ESCmd{
-		Url: url,
-	}
-}
+func (q *Query) BuildAggregation(accountIDs []int, from string, to string) *Query {
+	q.Size = 0
 
-func (aggr *ESQuery) BuildAggregation(accountIds []int, from string, to string) *ESQuery {
-	aggr.Size = 0
-
-	aggr.Query = map[string]any{
+	q.Query = map[string]any{
 		"bool": map[string]any{
 			"must": []any{
 				map[string]any{
 					"terms": map[string]any{
-						"accountid": accountIds,
+						"accountid": accountIDs,
 					},
 				},
 				map[string]any{
@@ -35,7 +29,7 @@ func (aggr *ESQuery) BuildAggregation(accountIds []int, from string, to string) 
 		},
 	}
 
-	aggr.Aggs = map[string]any{
+	q.Aggs = map[string]any{
 		"by_site": map[string]any{
 			"terms": map[string]any{
 				"field": "sitename.keyword",
@@ -56,5 +50,5 @@ func (aggr *ESQuery) BuildAggregation(accountIds []int, from string, to string) 
 		},
 	}
 
-	return aggr
+	return q
 }

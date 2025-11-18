@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/artepepep/Get-stats-GO/conf"
-	"github.com/artepepep/Get-stats-GO/utils"
+	"github.com/artepepep/Get-stats-GO/elasticsearch"
 )
 
 var (
@@ -14,11 +14,11 @@ var (
 
 func main() {
 	conf.LoadEnv()
-	es := utils.NewES(os.Getenv("ELASTIC_SEARCH_URL"))
-	q := utils.ESQuery{}
+	es := elasticsearch.NewClient(os.Getenv("ELASTIC_SEARCH_URL"))
+	q := elasticsearch.Query{}
 
 	queryBody := q.BuildAggregation(accountIds, "2025-11-10", "2025-11-16")
-	resp, err := es.Search(queryBody)
+	resp, err := es.Search("statistic9730", queryBody)
 
 	if err != nil {
 		panic(err)
